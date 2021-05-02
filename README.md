@@ -1,5 +1,10 @@
 # HTLC: Hashed Time Lock Contract 
 
+A Hashed Timelock Contract (HTLC) is a transactional agreement used in the cryptocurrency industry to produce conditional payments. It is basically a payment wherein the receiver or the beneficiary is required to acknowledge the receipt of payment before a predetermined time or a preset deadline. The receiver is required to acknowledge the payment in the form of cryptographic proof of payment, or else, they forfeit the ability to claim that payment. It is then refunded back to the payee.
+
+Hence, an HTLC basically implements time-bound transactions in the crypto world. If the receiver does not generate a cryptographic proof of receipt of payment within a certain predetermined time frame, they will not receive any money, and the transaction becomes void.
+
+
 To learn about HTLC read [this article](https://corporatefinanceinstitute.com/resources/knowledge/other/hashed-timelock-contract-htlc/#:~:text=Summary-,A%20Hashed%20Timelock%20Contract%20(HTLC)%20is%20a%20transactional%20agreement%20used,time%20or%20a%20preset%20deadline.).
 
 
@@ -22,10 +27,6 @@ Successfully generated Typechain artifacts!
       ✓ Should be able withdraw with right conditions (44ms)
 
 ```
-
-### EIP-712 and EIP-191
-
-This contract follows [EIP-712](https://eips.ethereum.org/EIPS/eip-712) and [EIP-191](https://eips.ethereum.org/EIPS/eip-191) standards
 
 ### Pre Requisites
 
