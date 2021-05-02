@@ -3,10 +3,8 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { Token, Token__factory, HTLC, HTLC__factory } from "../typechain";
 
-// Alice has tokenA and wants to exchange her tokens with Bob's tokenB.
-
 describe("Hash Time Locked Contracts", () => {
-  let tokenA: Token, tokenB: Token, htlc: HTLC, signers: SignerWithAddress[];
+  let tokenA: Token, tokenB: Token, htlc: HTLC, signers: SignerWithAddress[], contractId: string;
   const totalSupply = ethers.utils.parseEther(String(10 ** 6));
 
   before("Deploy Contracts", async () => {
@@ -35,17 +33,20 @@ describe("Hash Time Locked Contracts", () => {
 
   describe("New HTLC", async () => {
     it("Should approve amount", async () => {
-      // Task performed by Alice
+      const amount = ethers.utils.parseEther("1");
+      // Allow htlc contract to transfer token to itself at the time of creating new contract
+      const approve_tx = await tokenA.approve(htlc.address, amount);
+      await approve_tx.wait();
+      expect(await tokenA.allowance(signers[0].address, htlc.address)).to.equal(amount);
+    });
+
+    it("Should create new contract", async () => {
       const amount = ethers.utils.parseEther("1");
       const password = ethers.utils.formatBytes32String("secret password");
       const hashedPassword = ethers.utils.keccak256(password);
       const current_time = Math.floor(Date.now() / 1000);
       const hour_seconds = 3600;
       const expiry_time = current_time + hour_seconds; // Expire in 1hr
-      // Allow htlc contract to transfer token to itself at the time of creating new contract
-      const approve_tx = await tokenA.approve(htlc.address, amount);
-      await approve_tx.wait();
-
       const htlc_tx = await htlc.newContract(
         await signers[1].getAddress(),
         hashedPassword,
@@ -60,7 +61,7 @@ describe("Hash Time Locked Contracts", () => {
         [signers[0].address, signers[1].address, tokenA.address, amount, hashedPassword, expiry_time],
       );
 
-      const contractId = ethers.utils.keccak256(contract_id_cont);
+      contractId = ethers.utils.keccak256(contract_id_cont);
 
       const contract = await htlc.getContract(contractId);
 
@@ -73,6 +74,17 @@ describe("Hash Time Locked Contracts", () => {
       expect(contract.withdrawn).is.false;
       expect(contract.refunded).is.false;
       expect(contract.password).to.equal(ethers.constants.HashZero);
+    });
+  });
+
+  describe("Withdraw", () => {
+    it("Should be able withdraw with right conditions", async () => {
+      const password = ethers.utils.formatBytes32String("secret password");
+      const withdraw_tx = await htlc.connect(signers[1]).withdraw(contractId, password);
+      await withdraw_tx.wait();
+      const contract = await htlc.getContract(contractId);
+      expect(contract.withdrawn).is.true;
+      expect(contract.password).to.equal(password);
     });
   });
 });
