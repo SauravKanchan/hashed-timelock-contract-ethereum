@@ -2,6 +2,8 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+// import "hardhat/console.sol";
+
 // @title Hashed Time Lock Contract
 // @description Used for Atomic swaps, i.e exchanging funds across different blockchain
 contract HTLC {
@@ -92,7 +94,7 @@ contract HTLC {
         futureTimelock(_timelock)
         returns (bytes32 contractId)
     {
-        contractId = keccak256(abi.encodePacked(msg.sender, _receiver, _tokenContract, _amount, _hashlock, _timelock));
+        contractId = keccak256(abi.encode(msg.sender, _receiver, _tokenContract, _amount, _hashlock, _timelock));
 
         // Reject if a contract already exists with the same parameters. The
         // sender must change one of these parameters (ideally providing a
