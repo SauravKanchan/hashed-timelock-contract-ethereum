@@ -71,6 +71,13 @@ contract HTLC {
         _;
     }
 
+    modifier refundable(bytes32 _contractId) {
+        require(contracts[_contractId].sender == msg.sender, "refundable: not sender");
+        require(contracts[_contractId].refunded == false, "refundable: already refunded");
+        require(contracts[_contractId].withdrawn == false, "refundable: already withdrawn");
+        require(contracts[_contractId].timelock <= block.timestamp, "refundable: timelock not yet passed");
+        _;
+    }
     mapping(bytes32 => LockContract) public contracts;
 
     function newContract(
@@ -140,5 +147,55 @@ contract HTLC {
         ERC20(c.tokenContract).transfer(c.receiver, c.amount);
         emit HTLCWithdraw(_contractId);
         return true;
+    }
+
+    /**
+     * @dev Called by the sender if there was no withdraw AND the time lock has
+     * expired. This will restore ownership of the tokens to the sender.
+     *
+     * @param _contractId Id of HTLC to refund from.
+     * @return bool true on success
+     */
+    function refund(bytes32 _contractId) external contractExists(_contractId) refundable(_contractId) returns (bool) {
+        LockContract storage c = contracts[_contractId];
+        c.refunded = true;
+        ERC20(c.tokenContract).transfer(c.sender, c.amount);
+        emit HTLCRefund(_contractId);
+        return true;
+    }
+
+    /**
+     * @dev Get contract details.
+     * @param _contractId HTLC contract id
+     * @return All parameters in struct LockContract for _contractId HTLC
+     */
+    function getContract(bytes32 _contractId)
+        public
+        view
+        returns (
+            address sender,
+            address receiver,
+            address tokenContract,
+            uint256 amount,
+            bytes32 hashlock,
+            uint256 timelock,
+            bool withdrawn,
+            bool refunded,
+            bytes32 password
+        )
+    {
+        if (haveContract(_contractId) == false) return (address(0), address(0), address(0), 0, 0, 0, false, false, 0);
+        LockContract storage c = contracts[_contractId];
+        return (
+            c.sender,
+            c.receiver,
+            c.tokenContract,
+            c.amount,
+            c.hashlock,
+            c.timelock,
+            c.withdrawn,
+            c.refunded,
+            c.password
+        );
     }
 }
