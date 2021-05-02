@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // @title Hashed Time Lock Contract
 // @description Used for Atomic swaps, i.e exchanging funds across different blockchain
 contract HTLC {
-
     event HTLCNew(
         bytes32 indexed contractId,
         address indexed sender,
@@ -48,6 +47,27 @@ contract HTLC {
         // probably want something a bit further in the future then this.
         // but this is still a useful sanity check:
         require(_time > block.timestamp, "timelock time must be in the future");
+        _;
+    }
+
+    modifier contractExists(bytes32 _contractId) {
+        require(haveContract(_contractId), "contractId does not exist");
+        _;
+    }
+
+    modifier hashlockMatches(bytes32 _contractId, bytes32 _x) {
+        require(contracts[_contractId].hashlock == sha256(abi.encodePacked(_x)), "hashlock hash does not match");
+        _;
+    }
+
+    modifier withdrawable(bytes32 _contractId) {
+        require(contracts[_contractId].receiver == msg.sender, "withdrawable: not receiver");
+        require(contracts[_contractId].withdrawn == false, "withdrawable: already withdrawn");
+        // This check needs to be added if claims are allowed after timeout.
+        // That is, if the following timelock check is commented out
+        require(contracts[_contractId].refunded == false, "withdrawable: already refunded");
+        // disallow claim to be made after the timeout
+        require(contracts[_contractId].timelock > now, "withdrawable: timelock time must be in the future");
         _;
     }
 
@@ -97,5 +117,28 @@ contract HTLC {
      */
     function haveContract(bytes32 _contractId) internal view returns (bool exists) {
         exists = (contracts[_contractId].sender != address(0));
+    }
+
+    /**
+     * @dev Called by the receiver once they know the password of the hashlock.
+     * This will transfer ownership of the locked tokens to their address.
+     *
+     * @param _contractId Id of the HTLC.
+     * @param _password sha256(_password) should equal the contract hashlock.
+     * @return bool true on success
+     */
+    function withdraw(bytes32 _contractId, bytes32 _password)
+        external
+        contractExists(_contractId)
+        hashlockMatches(_contractId, _password)
+        withdrawable(_contractId)
+        returns (bool)
+    {
+        LockContract storage c = contracts[_contractId];
+        c.password = _password;
+        c.withdrawn = true;
+        ERC20(c.tokenContract).transfer(c.receiver, c.amount);
+        emit HTLCWithdraw(_contractId);
+        return true;
     }
 }
