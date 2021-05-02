@@ -67,7 +67,7 @@ contract HTLC {
         // That is, if the following timelock check is commented out
         require(contracts[_contractId].refunded == false, "withdrawable: already refunded");
         // disallow claim to be made after the timeout
-        require(contracts[_contractId].timelock > now, "withdrawable: timelock time must be in the future");
+        require(contracts[_contractId].timelock > block.timestamp, "withdrawable: timelock time must be in the future");
         _;
     }
 
@@ -167,7 +167,6 @@ contract HTLC {
     /**
      * @dev Get contract details.
      * @param _contractId HTLC contract id
-     * @return All parameters in struct LockContract for _contractId HTLC
      */
     function getContract(bytes32 _contractId)
         public
