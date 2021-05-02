@@ -56,7 +56,7 @@ contract HTLC {
     }
 
     modifier hashlockMatches(bytes32 _contractId, bytes32 _x) {
-        require(contracts[_contractId].hashlock == sha256(abi.encodePacked(_x)), "hashlock hash does not match");
+        require(contracts[_contractId].hashlock == keccak256(abi.encodePacked(_x)), "hashlock hash does not match");
         _;
     }
 
@@ -92,7 +92,7 @@ contract HTLC {
         futureTimelock(_timelock)
         returns (bytes32 contractId)
     {
-        contractId = sha256(abi.encodePacked(msg.sender, _receiver, _tokenContract, _amount, _hashlock, _timelock));
+        contractId = keccak256(abi.encodePacked(msg.sender, _receiver, _tokenContract, _amount, _hashlock, _timelock));
 
         // Reject if a contract already exists with the same parameters. The
         // sender must change one of these parameters (ideally providing a
@@ -131,7 +131,7 @@ contract HTLC {
      * This will transfer ownership of the locked tokens to their address.
      *
      * @param _contractId Id of the HTLC.
-     * @param _password sha256(_password) should equal the contract hashlock.
+     * @param _password keccak256(_password) should equal the contract hashlock.
      * @return bool true on success
      */
     function withdraw(bytes32 _contractId, bytes32 _password)
