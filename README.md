@@ -1,26 +1,21 @@
-# Solidity Template
+# Simple MultiSig Wallet
 
-My favourite setup for writing Solidity smart contracts.
+This is a Simple Ethereum multisig contract using solidity 0.8 and hardat.
 
-- [Hardhat](https://github.com/nomiclabs/hardhat): compile and run the smart contracts on a local development network
-- [TypeChain](https://github.com/ethereum-ts/TypeChain): generate TypeScript types for smart contracts
-- [Ethers](https://github.com/ethers-io/ethers.js/): renowned Ethereum library and wallet implementation
-- [Waffle](https://github.com/EthWorks/Waffle): tooling for writing comprehensive smart contract tests
-- [Solhint](https://github.com/protofire/solhint): linter
-- [Solcover](https://github.com/sc-forks/solidity-coverage): code coverage
-- [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
+The main idea behind the contract is to pass in a threshold of detached signatures into the execute function and the contract will check the signatures and send off the transaction.
 
-This is a GitHub template, which means you can reuse it as many times as you want. You can do that by clicking the "Use this
-template" button at the top of the page.
+> Note: signatures, owners should always be passed in increasing order so that contract can detect duplicate entries
 
-## Usage
+### EIP-712 and EIP-191
+
+This contract follows [EIP-712](https://eips.ethereum.org/EIPS/eip-712) and [EIP-191](https://eips.ethereum.org/EIPS/eip-191) standards
 
 ### Pre Requisites
 
 Before running any command, make sure to install dependencies:
 
 ```sh
-$ yarn install
+$ npm i
 ```
 
 ### Compile
@@ -28,7 +23,7 @@ $ yarn install
 Compile the smart contracts with Hardhat:
 
 ```sh
-$ yarn compile
+$ npm run compile
 ```
 
 ### TypeChain
@@ -36,7 +31,7 @@ $ yarn compile
 Compile the smart contracts and generate TypeChain artifacts:
 
 ```sh
-$ yarn typechain
+$ npm run typechain
 ```
 
 ### Lint Solidity
@@ -44,7 +39,7 @@ $ yarn typechain
 Lint the Solidity code:
 
 ```sh
-$ yarn lint:sol
+$ npm run lint:sol
 ```
 
 ### Lint TypeScript
@@ -52,15 +47,15 @@ $ yarn lint:sol
 Lint the TypeScript code:
 
 ```sh
-$ yarn lint:ts
+$ npm run lint:ts
 ```
 
 ### Test
 
-Run the Mocha tests:
+Run the Chai tests:
 
 ```sh
-$ yarn test
+$ npm run test
 ```
 
 ### Coverage
@@ -68,7 +63,7 @@ $ yarn test
 Generate the code coverage report:
 
 ```sh
-$ yarn coverage
+$ npm run coverage
 ```
 
 ### Report Gas
@@ -76,7 +71,7 @@ $ yarn coverage
 See the gas usage per unit test and average gas per method call:
 
 ```sh
-$ REPORT_GAS=true yarn test
+$ REPORT_GAS=true npm run test
 ```
 
 ### Clean
@@ -84,7 +79,7 @@ $ REPORT_GAS=true yarn test
 Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 
 ```sh
-$ yarn clean
+$ npm run clean
 ```
 
 ### Deploy
@@ -92,13 +87,13 @@ $ yarn clean
 Deploy the contracts to Hardhat Network:
 
 ```sh
-$ yarn deploy
+$ npm run deploy
 ```
 
 Deploy the contracts to a specific network, such as the Ropsten testnet:
 
 ```sh
-$ yarn deploy:network ropsten
+$ npm run deploy:network ropsten
 ```
 
 ## Syntax Highlighting
@@ -109,9 +104,9 @@ compiler version is to add the following fields to your VSCode user settings:
 
 ```json
 {
-  "solidity.compileUsingRemoteVersion": "v0.8.4+commit.c7e474f2",
+  "solidity.compileUsingRemoteVersion": "v0.8.3+commit.8d00100c",
   "solidity.defaultCompiler": "remote"
 }
 ```
 
-Where of course `v0.8.4+commit.c7e474f2` can be replaced with any other version.
+Where of course `v0.8.3+commit.8d00100c` can be replaced with any other version.
