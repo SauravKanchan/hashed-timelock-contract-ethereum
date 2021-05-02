@@ -1,10 +1,27 @@
-# Simple MultiSig Wallet
+# HTLC: Hashed Time Lock Contract 
 
-This is a Simple Ethereum multisig contract using solidity 0.8 and hardat.
+To learn about HTLC read [this article](https://corporatefinanceinstitute.com/resources/knowledge/other/hashed-timelock-contract-htlc/#:~:text=Summary-,A%20Hashed%20Timelock%20Contract%20(HTLC)%20is%20a%20transactional%20agreement%20used,time%20or%20a%20preset%20deadline.).
 
-The main idea behind the contract is to pass in a threshold of detached signatures into the execute function and the contract will check the signatures and send off the transaction.
 
-> Note: signatures, owners should always be passed in increasing order so that contract can detect duplicate entries
+```
+> htlc@1.0.0 test /home/saurav/projects/hashed-timelock-contract-ethereum
+> hardhat test
+
+Creating Typechain artifacts in directory typechain for target ethers-v5
+Successfully generated Typechain artifacts!
+
+
+  Hash Time Locked Contracts
+    Contracts
+      ✓ Should not be address(0)
+      ✓ Should match total supply
+    New HTLC
+      ✓ Should approve amount
+      ✓ Should create new contract (71ms)
+    Withdraw
+      ✓ Should be able withdraw with right conditions (44ms)
+
+```
 
 ### EIP-712 and EIP-191
 

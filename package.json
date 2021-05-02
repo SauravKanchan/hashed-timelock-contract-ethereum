@@ -1,10 +1,10 @@
 {
-  "name": "@paulrberg/solidity-template",
-  "description": "Setup for writing Solidity smart contracts",
+  "name": "htlc",
+  "description": "Hashed Time Lock contracts",
   "version": "1.0.0",
   "author": {
-    "name": "Paul Razvan Berg",
-    "url": "https://paulrberg.com"
+    "name": "Saurav Kanchan",
+    "url": "https://saurav.tech"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.1.0"

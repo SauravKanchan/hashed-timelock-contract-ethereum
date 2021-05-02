@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "hardhat/console.sol";
 
 // @title Hashed Time Lock Contract
-// @description Used for Atomic swaps, i.e exchanging funds across different blockchain
 contract HTLC {
     event HTLCNew(
         bytes32 indexed contractId,
